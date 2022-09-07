@@ -1,0 +1,123 @@
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js" integrity="sha512-6Q5cHfb86ZJ3qWx47Pw7P5CN1/pXcBMmz3G0bXLIQ67wOtRF7brCaK5QQLPz2CWLBqjWRNH+/bV5MwwWxFGxww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css" integrity="sha512-xIf9AdJauwKIVtrVRZ0i4nHP61Ogx9fSRAkCLecmE2dL/U8ioWpDvFCAy4dcfecN72HHB9+7FfQj3aiO68aaaw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/sql/sql.min.js" integrity="sha512-dfObApt1XdGl62IJLrjbIOc9QtnRORA5TCwdnJkSj6C/KjwMz2L/Sc4WlcrgAuWoY+n5xTf6NMMojoUOlgwjug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+    var myCodeMirror;
+    $(function () {
+        $('form').on('submit', doSubmit );
+        $('#format').click( doFormat );
+        $('#schema').change(showTables);
+        $(document).keypress ( function(event) {
+            if (event.which == 10) {
+                doSubmit();
+            }
+        });
+        let myTextArea = $('#sql')[0];
+        myCodeMirror = CodeMirror.fromTextArea(myTextArea, {
+            lineNumbers: true,
+            autofocus: true
+        });
+        myCodeMirror.setSize(null, 200);
+        showTables()
+    });
+
+    function showTables() {
+        let schema = $('#schema').val();
+        $.get("tables", {
+        'schema': schema
+        })
+        .done(function(data) {
+            let result = "";
+            console.log(data)
+            for (let i = 0; i < data.length; ++i) {
+                result += '<a href="javascript:setTable(&quot;' + data[i] + '&quot;)">' + data[i] + '</a><br>'
+            }
+            console.log(result)
+            $('#tables').html(result)
+        });
+    }
+
+    function setTable(tblName) {
+        //myCodeMirror.setValue('select * from ' + tblName);
+        doQuery("select * from " + tblName);
+        myCodeMirror.focus();
+    }
+
+    function doFormat() {
+        let sql = myCodeMirror.getValue();
+        $.post("format", {
+            'sql': sql
+        })
+        .done(function(data) {
+            myCodeMirror.setValue(data);
+            myCodeMirror.focus();
+        });
+    }
+
+    function doSubmit() {
+
+      let sql = myCodeMirror.getValue().trim();
+
+      if (sql == "") {
+        alert("Please enter a query.");
+        myCodeMirror.focus();
+        return false;
+      }
+
+      myCodeMirror.setValue(sql);
+
+      doQuery(sql);
+      return false;
+    }
+
+    function doQuery(sql) {
+
+        let schema = $('#schema').val();
+
+        $.post("execute", {
+            'schema': schema,
+            'sql': sql
+        })
+        .done(function(data) {
+            if (data.sqlMessage) {
+                $('#result').text(data.sqlMessage);
+            } else {
+                $('#result').html(data)
+            }
+            myCodeMirror.focus();
+      });
+
+    }
+
+  </script>
+</head>
+<body>
+    <form>
+
+    <table>
+        <tr>
+            <td valign="top">
+                <select id="schema">
+                    <option value="ordentry">Orders Database</option>
+                    <option value="univdb">University Database</option>
+                </select>
+                <div id="tables"></div>                
+            </td>
+            
+            <td>
+                <input type="submit" value="Query" style="margin-left: 30" title="Shortcut: Ctrl-Enter">
+                <input id="format" type="button" value="Format">
+                <br>
+                <textarea id="sql" rows="10" cols="80">select * from customer</textarea>
+            </td>
+        </tr>
+    </table>
+    <br><br>
+    <div id="result"></div>
+
+</form>
+</body>
+</html>

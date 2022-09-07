@@ -1,0 +1,18 @@
+{
+  "name": "cps301_database",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "engines": {
+    "node": "6.9.4"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.2",
+    "debug": "~2.2.0",
+    "express": "~4.14.0",
+    "mysql": "^2.18.1",
+    "sql-formatter": "^4.0.2"
+  }
+}
