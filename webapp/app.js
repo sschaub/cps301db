@@ -6,16 +6,17 @@ let bodyParser = require('body-parser');
 let mysql = require("mysql");
 let sqlformatter = require("sql-formatter");
 
-let dbUser = process.env.DBUSER
-let dbPass = process.env.DBPASS
+let dbUser = "mysql"
+let dbPass = process.env.MYSQL_PASSWORD
+let dbHost = process.env.DBHOST
 
-if (!dbUser || !dbPass) {
-    console.log('Must set DBUSER and DBPASS environment variables.')
+if (!dbPass || !dbHost) {
+    console.log('Must set MYSQL_PASSWORD and DBHOST environment variable.')
     process.exit(1)
 }
 
 let univdbpool = mysql.createPool({    
-    "host": "localhost",
+    "host": dbHost,
     "user": dbUser,
     "password": dbPass,
     "database": "univdb",
@@ -23,7 +24,7 @@ let univdbpool = mysql.createPool({
 });
 
 let ordentrypool = mysql.createPool({    
-    "host": "localhost",
+    "host": dbHost,
     "user": dbUser,
     "password": dbPass,
     "database": "ordentry",
