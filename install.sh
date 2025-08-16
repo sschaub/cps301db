@@ -19,6 +19,11 @@ usermod -a -G docker,adm,sudo $USER
 # Install software
 cd /home/$USER
 
+git clone https://github.com/sschaub/cps301db
+cd cps301db
+docker compose run app1 npm install
+cd ..
+
 # Copy .ssh authorized keys to $USER user
 cp -r ~/.ssh /home/$USER
 chown -R $USER:$USER * .ssh
