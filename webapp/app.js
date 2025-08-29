@@ -60,7 +60,13 @@ app.post('/execute', function (req, res) {
                 for (let row = 0; row < result.length; ++row) {
                     table += "\n<tr>"
                     for (let col = 0; col < fields.length; ++col) {
-                        table += "<td>" + result[row][fields[col].name]
+                        let val = result[row][fields[col].name]
+                        if (val instanceof Date) {
+                            val = val.toISOString().substring(0, 10)
+                        } else if (val == null) {
+                            val = "(null)"
+                        }
+                        table += "<td>" + val
                     }
                 }
                 table += "</table>"

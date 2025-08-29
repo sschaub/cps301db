@@ -19,6 +19,8 @@ usermod -a -G docker,adm,sudo $USER
 # Install software
 cd /home/$USER
 
+sudo su - $USER
+
 git clone https://github.com/sschaub/cps301db
 cd cps301db
 docker compose run app1 npm install
