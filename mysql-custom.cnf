@@ -1,0 +1,28 @@
+[mysqld]
+# Keep InnoDB small
+innodb_buffer_pool_size=256M
+innodb_buffer_pool_instances=1
+innodb_log_file_size=64M
+innodb_log_buffer_size=8M
+
+# Keep connection overhead low
+max_connections=40
+thread_cache_size=8
+table_open_cache=200
+
+# Temp tables and sorts
+tmp_table_size=32M
+max_heap_table_size=32M
+sort_buffer_size=512K
+join_buffer_size=512K
+read_buffer_size=512K
+read_rnd_buffer_size=512K
+
+# Reduce extras
+performance_schema=OFF
+skip_log_bin=1
+binlog_expire_logs_seconds=0
+
+# Flush behavior (safe defaults)
+innodb_flush_method=O_DIRECT
+innodb_flush_log_at_trx_commit=1

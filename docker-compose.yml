@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   mysql1:
@@ -13,10 +11,16 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mysql}
       MYSQL_DATABASE: mydb     # Name of MySQL database
     volumes:
+      # Mount custom config (must exist at ./mysql.cnf)
+      - ./mysql-custom.cnf:/etc/mysql/conf.d/mysql-custom.cnf:ro
       - mysql_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d  # Make scripts in our db folder run the first time to populate initial database when MySQL starts
     ports:
       - 3306:3306  # Bind MySQL server to host port to simplify connecting to it during development
+    deploy:
+          resources:
+            limits:
+              memory: 700M
 
   app1:
     image: "node:13"
